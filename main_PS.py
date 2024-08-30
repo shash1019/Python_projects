@@ -48,10 +48,31 @@ def save_entries():
                 current_data.update(new_entry)
                 #now lets update the files 
                 with open("data.json","w") as datafile:
-                    json.dump(current_data,datafile,4)
+                    json.dump(current_data,datafile,indent=4)
             finally:
                 website_entry.delete(0,END)
                 password_entry.delete(0,END)
+#-----------------------------SEARCH ----------------------------------#
+def find_password():
+    web=website_entry.get()
+    try:
+        with open("data.json","r") as datafile:
+            data_file=json.load(datafile)
+    except FileNotFoundError:
+        messagebox.showinfo (title="error",message=f"No data file found")
+    else:
+        if web in data_file:
+            email=data_file[web]["email"]
+            passwd=data_file[web]["password"]
+            messagebox.showinfo (title="info",message=f"email:{email}\npassword:{passwd}")
+        else:
+            messagebox.showinfo (title="error",message=f"No record for {web}")
+        
+
+
+
+
+
 
 # ---------------------------- UI SETUP ------------------------------- #
 window=Tk()
@@ -80,8 +101,8 @@ Password_lb.grid(row=3,column=0)
 
 # ------------------------SETTING UP ENTRIES
 # website entry
-website_entry=Entry(width=37)
-website_entry.grid(row=1,column=1,columnspan=2)
+website_entry=Entry(width=21)
+website_entry.grid(row=1,column=1)
 website_entry.focus()
 
 #email entry
@@ -101,6 +122,9 @@ gen_pw.grid(row=3,column=2)
 # add button
 add_b=Button(text="ADD",highlightthickness=-0,width=36,command=save_entries)
 add_b.grid(row=4,column=1,columnspan=2)
+
+search_but=Button(text="Search",highlightthickness=-0,width=8,command=find_password)
+search_but.grid(row=1,column=2)
 
 
 
