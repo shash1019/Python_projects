@@ -3,6 +3,8 @@ from tkinter import messagebox
 import math
 from password_gen import generate_password
 import pyperclip
+#importing jason module
+import json
 
 
 
@@ -17,15 +19,37 @@ def save_entries():
 
     website=website_entry.get()
     passwd=password_entry.get()
-    email=email_entry.get()
+    usremail=email_entry.get()
+    #setting the data as dictionary
+    new_entry={
+        website:{
+            "password":passwd,
+            "email":usremail
+            
+        }
+    }
 
     if len(website)== 0 or len(passwd)== 0:
         messagebox.showinfo(title="Ooops",message="Do not leave and fields blank")
     else:
-        proceed=messagebox.askokcancel(title="Final check",message=f"details entered:\nWebsite:{website}\nEmail:{email}\nPassword:{passwd}|\nConfirm to proced to save")
+        proceed=messagebox.askokcancel(title="Final check",message=f"details entered:\nWebsite:{website}\nEmail:{usremail}\nPassword:{passwd}|\nConfirm to proced to save")
         if proceed ==True:
-            with open("data.txt","a") as datafile:
-                datafile.write(f"{website}|{email}|{passwd}\n")
+            #first lets try to read if a file exits 
+            try:
+                with open("data.json","r") as datafile:
+                    #load the current data
+                    current_data=json.load(datafile)
+            except FileNotFoundError:
+                #if no json file command to creat one
+                with open("data.json","w") as datafile:
+                    json.dump(new_entry,datafile,indent=4)
+            else:
+                #if file exist we will update the data 
+                current_data.update(new_entry)
+                #now lets update the files 
+                with open("data.json","w") as datafile:
+                    json.dump(current_data,datafile,4)
+            finally:
                 website_entry.delete(0,END)
                 password_entry.delete(0,END)
 
